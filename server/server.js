@@ -3,7 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-const {generateMessage} = require('./utils/message');
+const {generateMessage, generateLocationMessage} = require('./utils/message');
 const publicPath = path.join(__dirname, '../public');
 // Heroku sets process.env.PORT variable
 const port = process.env.PORT || 3000;
@@ -34,6 +34,13 @@ io.on('connection', (socket) => {
 			text: message.text,
 			createAt: new Date().getTime()
 		})*/
+	});
+
+	socket.on('createLocationMessage', (coordinates, callback = () => {}) => {
+		const { latitude, longitude } = coordinates;
+		
+		io.emit('newLocationMessage', generateLocationMessage('Admin', latitude, longitude));
+		callback('Coordinates has been send');
 	});
 
 	socket.on('disconnect', () => {
