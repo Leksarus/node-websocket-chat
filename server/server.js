@@ -21,12 +21,13 @@ io.on('connection', (socket) => {
 
 	socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
-	socket.on('createMessage', (message) => {
-		console.log(message);
+	socket.on('createMessage', (message, callback = () => {}) => {
+		console.log(message, callback);
+		console.log('dsad');
 
 		// io emits event to everybody
 		io.emit('newMessage', generateMessage(message.from, message.text));
-
+		callback('Message has been send');
 		// if I send event, broadcast will send message to everybody but me
 		/*socket.broadcast.emit('newMessage', {
 			from: message.from,
