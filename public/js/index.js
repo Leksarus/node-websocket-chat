@@ -38,30 +38,36 @@ socket.on('newLocationMessage', function(message) {
 });*/
 
 document.querySelector('#message-form').addEventListener('submit', function(e) {
-	var text = document.querySelector('.messageInput').value;
+	var message = document.querySelector('.messageInput');
 	e.preventDefault();
 
 	socket.emit('createMessage', {
 		from: 'User',
-		text: text
+		text: message.value
 	}, function(serverMessage) {
-		console.log(serverMessage);
+		message.value = '';
 	})	
 })
 
 function displayNewMessage(message) {
 	var list = document.querySelector('#messages');
 	var newMessage = document.createElement('li');
-	newMessage.innerHTML = `Message from: ${message.from}: ${message.text}`;
+	newMessage.innerHTML = `${message.from}: ${message.text}`;
 	list.appendChild(newMessage);
 }
 
 document.querySelector('#sendLocation').addEventListener('click', function(event) {
+	var locationButton = document.querySelector('#sendLocation');
 	if (!navigator.geolocation) {
 		return alert('Gelocation not available');
 	}
 
+	locationButton.setAttribute('disabled', 'disabled');
+	locationButton.innerHTML = 'Loading';
+
 	navigator.geolocation.getCurrentPosition(function(position) {
+		locationButton.removeAttribute('disabled');
+		locationButton.innerHTML = 'Send location';
 		socket.emit('createLocationMessage', {
 			latitude: position.coords.latitude,
 			longitude: position.coords.longitude,
@@ -69,6 +75,8 @@ document.querySelector('#sendLocation').addEventListener('click', function(event
 			console.log(serverMessage);
 		})		
 	}, function() {
+		locationButton.removeAttribute('disabled');
+		locationButton.innerHTML = 'Send location';
 		alert('Unable to fetch location');
 	})
 })
