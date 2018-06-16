@@ -19,10 +19,11 @@ socket.on('newMessage', function(message) {
 });
 
 socket.on('newLocationMessage', function(message) {
+	var formattedTime = moment(message.createdAt).format('h:mm a');
 	var list = document.querySelector('#messages');
 	var li = document.createElement('a');
 	var link = document.createElement('a');
-	li.innerHTML = `${message.from} location: `
+	li.innerHTML = `${formattedTime} ${message.from} location: `
 	link.setAttribute('target', '_blank');
 	link.href = message.url;
 	link.innerHTML = message.url;
@@ -50,9 +51,10 @@ document.querySelector('#message-form').addEventListener('submit', function(e) {
 })
 
 function displayNewMessage(message) {
+	var formattedTime = moment(message.createdAt).format('h:mm a');
 	var list = document.querySelector('#messages');
 	var newMessage = document.createElement('li');
-	newMessage.innerHTML = `${message.from}: ${message.text}`;
+	newMessage.innerHTML = `${formattedTime} ${message.from}: ${message.text}`;
 	list.appendChild(newMessage);
 }
 
