@@ -13,13 +13,28 @@ function scrollToBottom() {
 	}
 }
 
+function paramsObject() {
+	var params = {};
+
+	location.search.substring(1,).split('&').forEach(function(element) {
+		var currentProp = element.split('=');
+		params[currentProp[0]] = decodeURIComponent(currentProp[1])
+	});
+
+	return params;
+}
+
 socket.on('connect', function() {
 	console.log('Connected to server');
-/*
-	socket.emit('createMessage', {
-		from: 'exampleMe',
-		text: 'Lorem ipsum dolor sit amet'
-	});*/
+
+	socket.emit('join', paramsObject(), function(err) {
+		if (err) {
+			alert(err);
+			window.location.href = "/";
+		} else {
+			console.log('No error');
+		}
+	})
 });
 
 socket.on('disconnect', function() {
