@@ -18,14 +18,26 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
 	console.log('New user connected');
 
-	socket.emit('newMessage', generateMessage('Admin', 'Welcome in channel'));
+	/*socket.emit('newMessage', generateMessage('Admin', 'Welcome in channel'));
 
-	socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
+	socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));*/
 
 	socket.on('join', (params, callback = () => {}) => {
 		if (!isRealString(params.name) || !isRealString(params.room)) {
 			callback('Name and room name are required.')
 		}
+
+		socket.join(params.room);
+		//socket.leave();
+
+		// Way for sending messages for specific rooms
+		// io.emit -> io.to('Room name').emit
+		// socket.broadcast -> socket.broadcast.to('Room name').emit
+		// socket.emit
+
+		socket.emit('newMessage', generateMessage('Admin', 'Welcome in channel'));
+
+		socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
 
 		callback();
 	});
