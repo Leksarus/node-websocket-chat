@@ -37,6 +37,25 @@ socket.on('connect', function() {
 	})
 });
 
+socket.on('updateUserList', function(list) {
+	var users = document.querySelector('#users');
+	var newList = document.createElement('ol');
+
+	list.forEach(function(element) {
+		newList.appendChild(createUserNode(element))
+	});
+
+	users.removeChild(users.lastElementChild);
+	users.appendChild(newList);
+})
+
+function createUserNode(name) {
+	var newUser = document.createElement('li');
+	newUser.innerHTML = name;
+
+	return newUser;
+}
+
 socket.on('disconnect', function() {
 	console.log('Disconnected from server.');
 })
@@ -52,7 +71,7 @@ socket.on('newLocationMessage', function(message) {
 	var template = document.querySelector('#locationMessageTemplate').innerHTML;
 	var formattedTime = moment(message.createdAt).format('h:mm a');
 	var html = Mustache.render(template, {
-		text: message.text,
+		url: message.url,
 		createdAt: formattedTime,
 		from: message.from
 	});
@@ -73,7 +92,6 @@ document.querySelector('#message-form').addEventListener('submit', function(e) {
 	e.preventDefault();
 
 	socket.emit('createMessage', {
-		from: 'User',
 		text: message.value
 	}, function(serverMessage) {
 		message.value = '';
@@ -88,7 +106,6 @@ function displayNewMessage(message) {
 		createdAt: formattedTime,
 		from: message.from
 	});
-	console.log(template, html, typeof template, typeof html);
 	document.querySelector('#messages').innerHTML += html;
 }
 
